@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python2.7
 # -*- coding: UTF-8 -*-
 #
 # Copyright (C) 2014  Lionel Bergeret
