@@ -8,9 +8,9 @@ You can find here a simple tool to capture gamma spectrum raw data directly from
     sudo apt-get install python-tz
     sudo apt-get install libudev-dev
 
-    wget http://pypi.python.org/packages/source/C/Cython/Cython-0.16.tar.gz
-    tar xzf Cython-0.16.tar.gz
-    cd Cython-0.16
+    wget http://pypi.python.org/packages/source/C/Cython/Cython-0.22.tar.gz
+    tar xzf Cython-0.22.tar.gz
+    cd Cython-0.22
     sudo python setup.py install
 
     wget http://sourceforge.net/projects/libusb/files/libusb-1.0/libusb-1.0.9/libusb-1.0.9.tar.bz2
