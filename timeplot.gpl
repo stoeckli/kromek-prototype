@@ -1,0 +1,41 @@
+#!/usr/bin/gnuplot -p
+
+CONFIG_TZ="Z";
+SN=system("echo ${SN}"); 
+DATAFILE=system("./cacher.pl *${SN}*.csv 36 6");
+PLOT_SINCE=system("date +%FT%TZ --date='32 hours ago'");
+print DATAFILE;
+# die unless defined
+reset;
+set encoding utf8;
+
+# This converts the time string in column COL to a number of seconds
+iso2s(COL) = strptime("%Y-%m-%dT%H:%M:%S" . CONFIG_TZ, strcol(COL));
+s2iso(seconds) = strftime("%Y-%m-%dT%H:%M:%S" . CONFIG_TZ, seconds);
+
+set datafile separator ",";
+
+set key autotitle columnheader top right;
+set grid xtics front;
+
+set xdata time; set timefmt x "%Y-%m-%dT%H:%M:%SZ"; set format x "%Y-%m-%d\n%H:%M";
+set xrange [PLOT_SINCE:];
+set xdata;
+stats DATAFILE u (iso2s(1)):2 nooutput;
+three_sigma_percent=sprintf("±%0.1f%%",	100.0 * 3*STATS_stddev_y / STATS_mean_y);
+
+min_y = (1.1*STATS_min_y < STATS_mean_y - 4*STATS_stddev_y) ? 1.1*STATS_min_y : STATS_mean_y - 4*STATS_stddev_y; min_y = (min_y > 0) ? min_y : 0;
+max_y = (1.1*STATS_max_y > STATS_mean_y + 4*STATS_stddev_y) ? 1.1*STATS_max_y : STATS_mean_y + 4*STATS_stddev_y;
+
+set xdata time; set timefmt x "%Y-%m-%dT%H:%M:%SZ"; set format x "%Y-%m-%d\n%H:%M";
+set xrange [PLOT_SINCE:]; set yrange [min_y : max_y];
+set ylabel "CPM";
+#set log y;
+set object 1 rectangle from "2013-01-01", STATS_mean_y - 3*STATS_stddev_y to "2033-01-01", STATS_mean_y + 3*STATS_stddev_y back fc rgb "cyan" fillstyle solid 0.2 border lc rgb "cyan";
+
+set title "RadAngel, background monitoring @Mita, in UTC";
+plot \
+	DATAFILE u 1:2 w p title SN, \
+	DATAFILE u 1:3 w l title "36-bin SMA [= 6h ]", \
+	DATAFILE u 1:4 w l title " 6-bin SMA [= 1h ]", \
+	-100 w filledcurves fc rgb "cyan" fs transparent solid 0.2 title "±3σ area [= " . three_sigma_percent . " ]";

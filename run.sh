@@ -35,9 +35,9 @@ function acquire()
 test_env
 
 NOW=$(date +%FT%T%z)
-DETECTORS=6
+DETECTORS=2
 # FIXME: HOURS/SECONDS is hardcoded below
-HOURS=6
+HOURS=240
 SECONDS=$((${HOURS}*3600))
 
 
